@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 import Places from './components/Places.jsx';
 import { AVAILABLE_PLACES } from './data.js';
@@ -16,6 +16,7 @@ function App() {
   const selectedPlace = useRef();
   const [availablePlaces, setAvailablePlaces] = useState([]);
   const [pickedPlaces, setPickedPlaces] = useState(storedItems);
+  const [ModalIsOpen, setModalIsOpen] = useState(false);
 
   // (최초 랜더링) 사용자의 위치 정보를 토대로, 지역을 거리순으로 보여주는 함수
   useEffect(() => {
@@ -27,17 +28,19 @@ function App() {
 
   // select 한 장소 제거하기 위한 모달 open
   function handleStartRemovePlace(id) {
-    modal.current.open();
+    // modal.current.open();
+    setModalIsOpen(true);
     selectedPlace.current = id;
   }
 
   // select 한 장소 제거하기 위한 모달 close
   function handleStopRemovePlace() {
-    modal.current.close();
+    // modal.current.close();
+    setModalIsOpen(false);
   }
 
   // 장소 select
-  function handleSelectPlace(id) {
+  const handleSelectPlace = useCallback(function handleSelectPlace(id) {
     setPickedPlaces((prevPickedPlaces) => {
       if (prevPickedPlaces.some((place) => place.id === id)) {
         return prevPickedPlaces;
@@ -50,20 +53,21 @@ function App() {
       // localStorage 생성되어있지 않았으면 데이터 넣어주기 (앞쪽에 추가)
       localStorage.setItem('selectedPlaces', JSON.stringify([id, ...storedIds]));
     }
-  }
+  }, []);
 
   // select 한 장소 제거
-  function handleRemovePlace() {
+  const handleRemovePlace = useCallback(function handleRemovePlace() {
     setPickedPlaces((prevPickedPlaces) => prevPickedPlaces.filter((place) => place.id !== selectedPlace.current));
-    modal.current.close();
+    // modal.current.close();
+    setModalIsOpen(false);
 
     const storedIds = JSON.parse(localStorage.getItem('selectedPlaces') || []);
     localStorage.setItem('selectedPlaces', JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current)));
-  }
+  }, []);
 
   return (
     <>
-      <Modal ref={modal}>
+      <Modal open={ModalIsOpen} onClose={handleStopRemovePlace}>
         <DeleteConfirmation onCancel={handleStopRemovePlace} onConfirm={handleRemovePlace} />
       </Modal>
 
