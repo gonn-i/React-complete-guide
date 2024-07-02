@@ -1,28 +1,29 @@
 import classes from './Counter.module.css';
+import { counterActions } from '../store/counter-slice';
 import { useSelector, useDispatch } from 'react-redux';
 
 const Counter = () => {
   // Redux store 구독 및 상태 조각 가져오기
-  const counter = useSelector((state) => state.counter);
-  const showCounter = useSelector((state) => state.showCounter);
+  const counter = useSelector((state) => state.counter.counter);
+  const showCounter = useSelector((state) => state.counter.showCounter);
 
   // useDispatch 훅을 통해, dispatch 함수를 반환하고
   // dispatch 함수에 action 을 전달하여, store 내부의 상태 변경을 트리거
   const dispatch = useDispatch();
   const IncrementHandler = () => {
-    dispatch({ type: 'increment' });
+    dispatch(counterActions.increment());
   };
 
   const IncreseHandler = () => {
-    dispatch({ type: 'increse', payload: { amount: 5 } });
+    dispatch(counterActions.increase({ amount: 5 }));
   };
 
   const DecrementHandler = () => {
-    dispatch({ type: 'decrement' });
+    dispatch(counterActions.decrement());
   };
 
   const toggleCounterHandler = () => {
-    dispatch({ type: 'toggle' });
+    dispatch(counterActions.toggleCounter());
   };
 
   return (
