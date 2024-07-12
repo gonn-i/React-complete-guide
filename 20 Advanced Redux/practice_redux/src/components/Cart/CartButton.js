@@ -1,6 +1,6 @@
 import classes from './CartButton.module.css';
 import { useSelector, useDispatch } from 'react-redux';
-import { modalActions } from '../../store/modalSlice';
+import { modalActions } from '../../store/ui-slice';
 
 const CartButton = (props) => {
   const totalQuantity = useSelector((state) => state.cart.totalQuantity);
